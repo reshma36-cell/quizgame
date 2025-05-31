@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quiz Game - Login/Register/Subjects/Quiz</title>
+<style>
+  /* ====== General Styles ====== */
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+  body {
+    margin: 0; font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh;
+    user-select: none;
+  }
+  .container {
+    background: rgba(0,0,0,0.85);
+    padding: 40px 30px;
+    border-radius: 20px;
+    width: 400px;
+    max-width: 90vw;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.7);
+    animation: fadeInUp 1s ease forwards;
+  }
+  h2 {
+    margin-bottom: 25px;
+    font-weight: 700;
+    font-size: 2rem;
+    color: #ffb347;
+    user-select: none;
+  }
+  input[type="text"], input[type="password"], input[type="email"] {
+    width: 100%; padding: 15px; margin-bottom: 20px;
+    border-radius: 12px; border: none; font-size: 1rem;
+    outline: none;
+    transition: box-shadow 0.3s ease;
+  }
+  input:focus {
+    box-shadow: 0 0 10px #ffb347;
+  }
+  button {
+    width: 100%; padding: 15px 0;
+    border: none; border-radius: 14px;
+    background: linear-gradient(45deg, #ffb347, #ffcc33);
+    font-weight: 700; font-size: 1.1rem; color: #3a2e00;
+    box-shadow: 0 8px 20px rgba(255, 179, 71, 0.6);
+    transition: background 0.3s ease;
+    cursor: pointer;
+    user-select: none;
+  }
+  button:hover {
+    background: linear-gradient(45deg, #ffcc33, #ffb347);
+  }
+  .toggle-link {
+    margin-top: 15px;
+    display: block;
+    color: #ffcc33;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.3s ease;
+    text-decoration: none;
+  }
+  .toggle-link:hover {
+    color: #ffe066;
+  }
+  section {
+    display: none;
+  }
+  section.active {
+    display: block;
+  }
+
+  /* Subject Selection */
+  .subjects {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 10px;
+  }
+  .subject-btn {
+    padding: 15px 0;
+    font-size: 1.2rem;
+    border-radius: 12px;
+    border: none;
+    font-weight: 700;
+    color: #3a2e00;
+    background: linear-gradient(45deg, #ffb347, #ffcc33);
+    box-shadow: 0 5px 15px rgba(255, 179, 71, 0.7);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .subject-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(255, 179, 71, 0.9);
+  }
+
+  /* Subject-specific styles with animations */
+  .maths-btn {
+    background: linear-gradient(45deg, #34a853, #0f9d58);
+    color: white;
+    box-shadow: 0 5px 15px rgba(52, 168, 83, 0.8);
+  }
+  .maths-btn::before {
+    content: "+ − × ÷";
+    position: absolute;
+    top: 8px;
+    right: 15px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: rgba(255,255,255,0.3);
+    animation: moveSymbols 3s linear infinite;
+    user-select: none;
+  }
+  @keyframes moveSymbols {
+    0% {right: 15px; opacity: 0.3;}
+    50% {right: 30px; opacity: 0.7;}
+    100% {right: 15px; opacity: 0.3;}
+  }
+
+  .science-btn {
+    background: linear-gradient(45deg, #4285f4, #3367d6);
+    color: white;
+    box-shadow: 0 5px 15px rgba(66, 133, 244, 0.8);
+  }
+  .science-btn::before {
+    content: "⚛️ 🔬 🔭";
+    position: absolute;
+    top: 8px;
+    right: 15px;
+    font-size: 1.1rem;
+    opacity: 0.3;
+    animation: floatScience 3s ease-in-out infinite;
+    user-select: none;
+  }
+  @keyframes floatScience {
+    0%, 100% { transform: translateY(0); opacity: 0.3;}
+    50% { transform: translateY(-6px); opacity: 0.7;}
+  }
+
+  .current-btn {
+    background: linear-gradient(45deg, #fbbc05, #f9ab00);
+    color: black;
+    box-shadow: 0 5px 15px rgba(251, 188, 5, 0.8);
+  }
+  .current-btn::before {
+    content: "📰 🗞️ 📢";
+    position: absolute;
+    top: 8px;
+    right: 15px;
+    font-size: 1.2rem;
+    opacity: 0.3;
+    animation: bounceNews 3s ease-in-out infinite;
+    user-select: none;
+  }
+  @keyframes bounceNews {
+    0%, 100% { transform: translateY(0); opacity: 0.3;}
+    50% { transform: translateY(-5px); opacity: 0.7;}
+  }
+
+  .logout-btn {
+    margin-top: 25px;
+    background-color: #ff4c4c;
+    color: white;
+    box-shadow: 0 5px 15px rgba(255, 76, 76, 0.8);
+    cursor: pointer;
+    width: 100%;
+  }
+  .logout-btn:hover {
+    background-color: #e03e3e;
+  }
+
+  /* Quiz Section */
+  #quiz-section {
+    text-align: left;
+  }
+  #question-number {
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+  #question-text {
+    font-size: 1.25rem;
+    margin-bottom: 20px;
+  }
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  .option-btn {
+    padding: 12px 20px;
+    font-size: 1rem;
+    border-radius: 12px;
+    border: none;
+    background: #333;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    user-select: none;
+  }
+  .option-btn:hover:not(.correct):not(.wrong) {
+    background: #555;
+  }
+  .option-btn.correct {
+    background-color: #34a853;
+    cursor: default;
+  }
+  .option-btn.wrong {
+    background-color: #ea4335;
+    cursor: default;
+  }
+  #next-btn {
+    margin-top: 25px;
+    background: linear-gradient(45deg, #4285f4, #3367d6);
+    color: white;
+    width: auto;
+    padding: 12px 30px;
+    font-weight: 700;
+    cursor: pointer;
+    user-select: none;
+  }
+  #next-btn:disabled {
+    background: #666;
+    cursor: not-allowed;
+  }
+  #timer {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    color: #ffb347;
+    text-align: center;
+  }
+  #score-display {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-top: 20px;
+    color: #34a853;
+  }
+  #back-subjects-btn {
+    width: 100%;
+    background: #777;
+    color: white;
+    padding: 12px 0;
+    font-weight: 600;
+    border-radius: 12px;
+    border: none;
+    margin-top: 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+  #back-subjects-btn:hover {
+    background: #999;
+  }
+
+  @keyframes fadeInUp {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+</style>
+</head>
+<body>
+
+  <!-- LOGIN -->
+  <section id="login-section" class="container active" aria-label="Login form">
+    <h2>Login</h2>
+    <form id="login-form">
+      <input type="text" id="login-username" placeholder="Username" required autocomplete="username" />
+      <input type="password" id="login-password" placeholder="Password" required autocomplete="current-password" />
+      <button type="submit">Login</button>
+    </form>
+    <a href="#" id="show-register" class="toggle-link">Don't have an account? Register here</a>
+  </section>
+
+  <!-- REGISTER -->
+  <section id="register-section" class="container" aria-label="Register form">
+    <h2>Register</h2>
+    <form id="register-form">
+      <input type="text" id="register-username" placeholder="Username" required autocomplete="username" />
+      <input type="email" id="register-email" placeholder="Email" required autocomplete="email" />
+      <input type="password" id="register-password" placeholder="Password" required autocomplete="new-password" />
+      <button type="submit">Register</button>
+    </form>
+    <a href="#" id="show-login" class="toggle-link">Already have an account? Login here</a>
+  </section>
+
+  <!-- SUBJECT SELECTION -->
+  <section id="subject-section" class="container" aria-label="Subject selection">
+    <h2>Select a Subject</h2>
+    <div class="subjects">
+      <button class="subject-btn maths-btn" data-subject="maths" aria-label="Maths subject">Maths</button>
+      <button class="subject-btn science-btn" data-subject="science" aria-label="Science subject">Science</button>
+      <button class="subject-btn current-btn" data-subject="current" aria-label="Current Affairs subject">Current Affairs</button>
+    </div>
+    <button class="logout-btn" id="logout-btn" aria-label="Logout">Logout</button>
+  </section>
+
+  <!-- QUIZ SECTION -->
+  <section id="quiz-section" class="container" aria-label="Quiz">
+    <div id="timer" aria-live="polite" aria-atomic="true">Time left: 40s</div>
+    <div id="question-number"></div>
+    <div id="question-text"></div>
+    <div class="options" role="list" aria-label="Answer options"></div>
+    <button id="next-btn" disabled>Next Question</button>
+    <div id="score-display" role="alert"></div>
+    <button id="back-subjects-btn">Back to Subjects</button>
+  </section>
+
+<script>
+  // ====== Data for users ======
+  // This example stores users in localStorage.
+  // In real projects, use a secure backend.
+  const usersKey = "quizgame_users";
+  const loggedUserKey = "quizgame_loggedUser";
+
+  // ====== Quiz Questions (sample 3 each subject) ======
+   const quizData = {
+  maths: [
+    { question: "What is 7 × 8?", options: ["54", "56", "64", "58"], answer: 1 },
+    { question: "Simplify: 2 + 3 × 4", options: ["20", "14", "10", "18"], answer: 1 },
+    { question: "What is the square root of 81?", options: ["7", "9", "8", "6"], answer: 1 },
+    { question: "What is 12 ÷ 4?", options: ["2", "4", "3", "6"], answer: 2 },
+    { question: "What is 15% of 200?", options: ["25", "30", "35", "40"], answer: 1 },
+    { question: "If x + 5 = 12, what is x?", options: ["7", "17", "5", "12"], answer: 0 },
+    { question: "What is the area of a triangle with base 10 and height 5?", options: ["25", "50", "15", "30"], answer: 0 },
+    { question: "What is 9²?", options: ["81", "18", "72", "90"], answer: 0 },
+    { question: "What is the value of π (pi) up to two decimal places?", options: ["3.14", "3.15", "3.41", "3.04"], answer: 0 },
+    { question: "What is 100 - 45?", options: ["65", "55", "45", "60"], answer: 0 },
+    { question: "What is the next prime number after 7?", options: ["9", "11", "13", "17"], answer: 1 },
+    { question: "Solve for y: 3y = 15", options: ["3", "5", "10", "12"], answer: 1 },
+    { question: "What is 5! (factorial)?", options: ["120", "60", "24", "720"], answer: 0 },
+    { question: "Convert 0.75 to a fraction.", options: ["3/4", "1/4", "2/3", "1/3"], answer: 0 },
+    { question: "What is the perimeter of a square with side 8?", options: ["64", "32", "16", "24"], answer: 1 },
+    { question: "Calculate 25 × 4.", options: ["75", "100", "125", "150"], answer: 1 },
+    { question: "What is the cube root of 27?", options: ["2", "3", "9", "6"], answer: 1 },
+    { question: "What is 2³ + 3³?", options: ["35", "27", "17", "19"], answer: 0 },
+    { question: "What is 50% of 80?", options: ["30", "40", "50", "60"], answer: 1 },
+    { question: "If a = 4 and b = 5, what is a² + b²?", options: ["41", "45", "29", "25"], answer: 0 },
+    { question: "What is 3/5 as a decimal?", options: ["0.6", "0.5", "0.3", "0.75"], answer: 0 },
+    { question: "What is 0.2 × 0.5?", options: ["0.1", "0.01", "0.7", "0.3"], answer: 0 },
+    { question: "How many sides does a hexagon have?", options: ["5", "6", "7", "8"], answer: 1 },
+    { question: "What is the median of 3, 7, 9, 2, 6?", options: ["5", "6", "7", "4"], answer: 1 },
+    { question: "Simplify: 4(3 + 2)", options: ["14", "20", "18", "24"], answer: 1 },
+    { question: "What is the mode of 2, 3, 5, 3, 4, 3?", options: ["2", "3", "4", "5"], answer: 1 },
+    { question: "What is the next number in the sequence: 2, 4, 8, 16, ...?", options: ["18", "24", "32", "20"], answer: 2 },
+    { question: "Convert 45 degrees to radians.", options: ["π/2", "π/3", "π/4", "π/6"], answer: 2 },
+    { question: "What is the square of 15?", options: ["225", "2250", "150", "125"], answer: 0 },
+    { question: "If the area of a circle is 154 cm², what is its radius? (Use π=3.14)", options: ["7 cm", "14 cm", "21 cm", "11 cm"], answer: 0 },
+    { question: "What is the sum of interior angles of a triangle?", options: ["90°", "180°", "270°", "360°"], answer: 1 },
+    { question: "What is 3 × 3 × 3 × 3?", options: ["27", "81", "12", "9"], answer: 1 },
+    { question: "What is the LCM of 4 and 6?", options: ["12", "24", "10", "14"], answer: 0 },
+    { question: "What is the GCD of 8 and 12?", options: ["4", "6", "2", "3"], answer: 0 },
+    { question: "If 5x = 35, what is x?", options: ["5", "7", "6", "8"], answer: 1 },
+    { question: "What is 0.1 + 0.2?", options: ["0.3", "0.2", "0.12", "0.21"], answer: 0 },
+    { question: "How many degrees are in a right angle?", options: ["45", "90", "180", "360"], answer: 1 },
+    { question: "What is 10% of 250?", options: ["20", "25", "30", "15"], answer: 1 },
+    { question: "What is 11 × 11?", options: ["121", "111", "110", "101"], answer: 0 },
+    { question: "What is 2/3 + 1/3?", options: ["1", "2/6", "1/3", "3/3"], answer: 0 },
+    { question: "Simplify: 7 - (3 + 2)", options: ["2", "3", "1", "5"], answer: 0 },
+    { question: "What is the volume of a cube with side 3?", options: ["9", "27", "6", "12"], answer: 1 },
+    { question: "What is the equation of a straight line?", options: ["y = mx + c", "y = ax² + bx + c", "x = y + c", "y = m + x"], answer: 0 },
+    { question: "What is 8²?", options: ["64", "16", "32", "128"], answer: 0 },
+    { question: "What is the result of 2 to the power 5?", options: ["10", "32", "25", "16"], answer: 1 },
+    { question: "Find x if 2x + 3 = 11.", options: ["4", "3", "5", "6"], answer: 0 },
+    { question: "What is the circumference of a circle with diameter 10?", options: ["31.4", "15.7", "20", "25"], answer: 0 },
+    { question: "What is 1/4 as a decimal?", options: ["0.25", "0.4", "0.5", "0.75"], answer: 0 },
+    { question: "Simplify: 6 × (2 + 3)", options: ["30", "36", "15", "28"], answer: 0 },
+    { question: "What is the sum of angles in a quadrilateral?", options: ["180°", "270°", "360°", "90°"], answer: 2 }
+  ],
+
+  science: [
+    { question: "Water's chemical formula is?", options: ["H2O", "O2", "CO2", "NaCl"], answer: 0 },
+    { question: "Which planet is known as the Red Planet?", options: ["Venus", "Mars", "Jupiter", "Saturn"], answer: 1 },
+    { question: "What gas do plants absorb for photosynthesis?", options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"], answer: 2 },
+    { question: "What is the boiling point of water?", options: ["100°C", "90°C", "80°C", "110°C"], answer: 0 },
+    { question: "Which organ pumps blood in the human body?", options: ["Liver", "Brain", "Heart", "Kidney"], answer: 2 },
+    { question: "What force keeps us on the ground?", options: ["Magnetism", "Friction", "Gravity", "Electricity"], answer: 2 },
+    { question: "Which vitamin is produced when skin is exposed to sunlight?", options: ["Vitamin A", "Vitamin C", "Vitamin D", "Vitamin B12"], answer: 2 },
+    { question: "Which part of the plant conducts photosynthesis?", options: ["Stem", "Root", "Leaf", "Flower"], answer: 2 },
+    { question: "What is the largest planet in our solar system?", options: ["Earth", "Saturn", "Jupiter", "Neptune"], answer: 2 },
+    { question: "Which gas is most abundant in the Earth's atmosphere?", options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"], answer: 1 },
+    { question: "What is the human body's largest organ?", options: ["Heart", "Skin", "Liver", "Lung"], answer: 1 },
+    { question: "What is the chemical symbol for gold?", options: ["Go", "Au", "Ag", "Gd"], answer: 1 },
+    { question: "What part of the cell contains genetic material?", options: ["Cytoplasm", "Nucleus", "Membrane", "Mitochondria"], answer: 1 },
+    { question: "What type of blood cells help fight infections?", options: ["Red blood cells", "White blood cells", "Platelets", "Plasma"], answer: 1 },
+    { question: "What is the main gas released by burning fossil fuels?", options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Methane"], answer: 1 },
+    { question: "Which organ filters blood in the human body?", options: ["Heart", "Liver", "Kidneys", "Lungs"], answer: 2 },
+    { question: "What is the pH of pure water?", options: ["7", "1", "14", "10"], answer: 0 },
+    { question: "Which element is needed for the formation of rust?", options: ["Oxygen", "Hydrogen", "Carbon", "Nitrogen"], answer: 0 },
+    { question: "Which planet is closest to the Sun?", options: ["Venus", "Earth", "Mercury", "Mars"], answer: 2 },
+    { question: "What gas do humans exhale?", options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Helium"], answer: 1 },
+    { question: "What is the process of water turning into vapor called?", options: ["Condensation", "Evaporation", "Precipitation", "Sublimation"], answer: 1 },
+    { question: "Which organ helps in digestion by producing bile?", options: ["Pancreas", "Liver", "Stomach", "Intestine"], answer: 1 },
+    { question: "What is the basic unit of life?", options: ["Atom", "Molecule", "Cell", "Organ"], answer: 2 },
+    { question: "Which planet has rings around it?", options: ["Mars", "Jupiter", "Saturn", "Venus"], answer: 2 },
+    { question: "Which gas is essential for respiration?", options: ["Nitrogen", "Oxygen", "Carbon Dioxide", "Hydrogen"], answer: 1 },
+    { question: "Which blood type is known as the universal donor?", options: ["A", "B", "AB", "O"], answer: 3 },
+    { question: "What kind of energy does the sun provide?", options: ["Nuclear", "Solar", "Mechanical", "Electrical"], answer: 1 },
+    { question: "What device measures temperature?", options: ["Barometer", "Thermometer", "Hygrometer", "Anemometer"], answer: 1 },
+    { question: "What is the human body’s primary source of energy?", options: ["Fat", "Protein", "Carbohydrates", "Vitamins"], answer: 2 },
+    { question: "Which metal is liquid at room temperature?", options: ["Mercury", "Iron", "Aluminum", "Copper"], answer: 0 },
+    { question: "Which planet is known for its Great Red Spot?", options: ["Mars", "Jupiter", "Saturn", "Neptune"], answer: 1 },
+    { question: "What part of the eye controls the amount of light entering?", options: ["Cornea", "Iris", "Pupil", "Lens"], answer: 1 },
+    { question: "Which gas causes acid rain?", options: ["Carbon Dioxide", "Sulfur Dioxide", "Nitrogen", "Oxygen"], answer: 1 },
+    { question: "What is the study of earthquakes called?", options: ["Volcanology", "Seismology", "Meteorology", "Geology"], answer: 1 },
+    { question: "Which part of the brain controls balance?", options: ["Cerebrum", "Cerebellum", "Medulla", "Pons"], answer: 1 },
+    { question: "What is the main component of natural gas?", options: ["Methane", "Ethane", "Propane", "Butane"], answer: 0 },
+    { question: "Which element has the atomic number 1?", options: ["Hydrogen", "Helium", "Oxygen", "Carbon"], answer: 0 },
+    { question: "What is the function of red blood cells?", options: ["Fight infection", "Carry oxygen", "Clot blood", "Produce hormones"], answer: 1 },
+    { question: "Which organ stores bile?", options: ["Liver", "Gallbladder", "Pancreas", "Kidney"], answer: 1 },
+    { question: "What type of animal is a frog?", options: ["Mammal", "Amphibian", "Reptile", "Bird"], answer: 1 },
+    { question: "What is the human body's largest artery?", options: ["Pulmonary artery", "Aorta", "Coronary artery", "Carotid artery"], answer: 1 },
+    { question: "What is DNA short for?", options: ["Deoxyribonucleic Acid", "Dinucleic Acid", "Deoxynucleic Acid", "Deoxyribonucleic Atom"], answer: 0 },
+    { question: "What is the unit of electric current?", options: ["Volt", "Ampere", "Ohm", "Watt"], answer: 1 },
+    { question: "Which planet rotates on its side?", options: ["Uranus", "Neptune", "Saturn", "Jupiter"], answer: 0 },
+    { question: "What kind of celestial body is the Sun?", options: ["Planet", "Star", "Moon", "Comet"], answer: 1 },
+    { question: "What is the chemical symbol for sodium?", options: ["S", "Na", "Sn", "N"], answer: 1 },
+    { question: "What organ in the human body produces insulin?", options: ["Liver", "Pancreas", "Kidney", "Spleen"], answer: 1 },
+    { question: "What type of bond involves sharing of electrons?", options: ["Ionic", "Covalent", "Metallic", "Hydrogen"], answer: 1 },
+    { question: "What type of energy is stored in fossil fuels?", options: ["Kinetic", "Chemical", "Thermal", "Mechanical"], answer: 1 },
+    { question: "What is the main component of air?", options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Argon"], answer: 2 }
+  ],
+
+  current: [
+    { question: "Who is the current president of the United States (2025)?", options: ["Joe Biden", "Kamala Harris", "Barack Obama", "Donald Trump"], answer: 0 },
+    { question: "Which country won the FIFA World Cup in 2022?", options: ["Brazil", "Argentina", "France", "Germany"], answer: 1 },
+    { question: "What is the capital city of Australia?", options: ["Sydney", "Melbourne", "Canberra", "Perth"], answer: 2 },
+    { question: "Who won the Nobel Peace Prize in 2023?", options: ["Greta Thunberg", "Maria Ressa", "Volodymyr Zelensky", "Abiy Ahmed"], answer: 2 },
+    { question: "Which country hosted the 2024 Summer Olympics?", options: ["Japan", "France", "USA", "China"], answer: 1 },
+    { question: "What is the name of the latest iPhone model released in 2025?", options: ["iPhone 15", "iPhone 14", "iPhone 16", "iPhone 13"], answer: 0 },
+    { question: "Which company is leading the production of electric vehicles?", options: ["Ford", "Tesla", "Toyota", "BMW"], answer: 1 },
+    { question: "What major climate agreement was signed in 2023?", options: ["Kyoto Protocol", "Paris Agreement", "Glasgow Climate Pact", "New Climate Accord"], answer: 3 },
+    { question: "Who is the Prime Minister of the UK in 2025?", options: ["Boris Johnson", "Rishi Sunak", "Theresa May", "Liz Truss"], answer: 1 },
+    { question: "Which country recently landed a rover on Mars?", options: ["USA", "China", "India", "Russia"], answer: 1 },
+    { question: "What is the largest tech company by market cap in 2025?", options: ["Apple", "Microsoft", "Google", "Amazon"], answer: 0 },
+    { question: "Which country legalized recreational cannabis most recently?", options: ["Canada", "Mexico", "Germany", "New Zealand"], answer: 2 },
+    { question: "Which international organization focuses on public health?", options: ["WHO", "UNICEF", "UNESCO", "IMF"], answer: 0 },
+    { question: "Who is the CEO of Twitter (X) in 2025?", options: ["Elon Musk", "Jack Dorsey", "Parag Agrawal", "Sundar Pichai"], answer: 0 },
+    { question: "What cryptocurrency reached its peak value in 2024?", options: ["Bitcoin", "Ethereum", "Dogecoin", "Litecoin"], answer: 0 },
+    { question: "Which country hosts the headquarters of the United Nations?", options: ["Switzerland", "USA", "France", "UK"], answer: 1 },
+    { question: "Which country is leading in AI research in 2025?", options: ["China", "USA", "Russia", "India"], answer: 1 },
+    { question: "Which movie won the Best Picture Oscar in 2024?", options: ["Dune", "Everything Everywhere All at Once", "Top Gun: Maverick", "Oppenheimer"], answer: 3 },
+    { question: "What is the name of the first AI chatbot that passed the Turing test?", options: ["ELIZA", "Siri", "ChatGPT", "None"], answer: 3 },
+    { question: "Which country launched the Artemis mission to the Moon?", options: ["USA", "China", "Russia", "India"], answer: 0 },
+    { question: "Who won the 2024 US presidential election?", options: ["Joe Biden", "Donald Trump", "Kamala Harris", "Pete Buttigieg"], answer: 1 },
+    { question: "What is the primary source of energy in 2025?", options: ["Coal", "Solar", "Nuclear", "Wind"], answer: 1 },
+    { question: "Which social media platform was banned in some countries in 2024?", options: ["TikTok", "Facebook", "Instagram", "Snapchat"], answer: 0 },
+    { question: "Who is the founder of SpaceX?", options: ["Jeff Bezos", "Elon Musk", "Richard Branson", "Bill Gates"], answer: 1 },
+    { question: "Which country won the 2023 Rugby World Cup?", options: ["New Zealand", "South Africa", "England", "France"], answer: 1 },
+    { question: "Which tech company launched the first commercial quantum computer?", options: ["IBM", "Google", "Microsoft", "Intel"], answer: 1 },
+    { question: "Which country has the largest population in 2025?", options: ["India", "China", "USA", "Indonesia"], answer: 0 },
+    { question: "What is the newest social media app gaining popularity in 2025?", options: ["Clubhouse", "BeReal", "Threads", "TikTok"], answer: 2 },
+    { question: "Which country is leading electric vehicle adoption in 2025?", options: ["Norway", "China", "USA", "Germany"], answer: 1 },
+    { question: "Which global event was held in Dubai in 2024?", options: ["Expo 2020", "Expo 2024", "World Cup", "Olympics"], answer: 0 },
+    { question: "Who won the 2024 Formula 1 World Championship?", options: ["Lewis Hamilton", "Max Verstappen", "Charles Leclerc", "Sebastian Vettel"], answer: 1 },
+    { question: "Which country withdrew from the European Union recently?", options: ["UK", "France", "Italy", "Spain"], answer: 0 },
+    { question: "Which company acquired Activision Blizzard in 2023?", options: ["Microsoft", "Sony", "Google", "Amazon"], answer: 0 },
+    { question: "Who is the current Chancellor of Germany?", options: ["Angela Merkel", "Olaf Scholz", "Frank-Walter Steinmeier", "Markus Söder"], answer: 1 },
+    { question: "Which country experienced a major volcanic eruption in 2023?", options: ["Iceland", "Indonesia", "Japan", "Italy"], answer: 1 },
+    { question: "What is the most popular programming language in 2025?", options: ["Python", "JavaScript", "Java", "C++"], answer: 0 },
+    { question: "Who is the CEO of Apple in 2025?", options: ["Tim Cook", "Steve Jobs", "Jeff Williams", "Craig Federighi"], answer: 0 },
+    { question: "Which country won the Eurovision Song Contest in 2024?", options: ["Sweden", "Italy", "Ukraine", "France"], answer: 2 },
+    { question: "Which country launched the James Webb Space Telescope?", options: ["USA", "ESA", "Russia", "China"], answer: 1 },
+    { question: "Who is the author of the best-selling book released in 2024, 'The Last Odyssey'?", options: ["James Rollins", "Dan Brown", "Clive Cussler", "Rick Riordan"], answer: 0 },
+    { question: "What is the newest generation of 5G called?", options: ["5G+", "6G", "5G Ultra", "5G Pro"], answer: 1 },
+    { question: "Which city was named the 2025 World Capital of Culture?", options: ["Paris", "Rome", "Kyoto", "New York"], answer: 2 },
+    { question: "What is the dominant battery technology in 2025?", options: ["Lithium-ion", "Solid-state", "Nickel-metal hydride", "Lead-acid"], answer: 1 },
+    { question: "Which country leads in renewable energy production?", options: ["China", "USA", "Germany", "India"], answer: 0 },
+    { question: "Who won the Booker Prize in 2024?", options: ["Hilary Mantel", "Kazuo Ishiguro", "Sally Rooney", "Maggie O'Farrell"], answer: 3 },
+    { question: "Which country recently discovered a new dinosaur species?", options: ["Argentina", "Canada", "China", "USA"], answer: 2 }
+  ]
+}
+
+
+      // Add more questions up to 50...
+  
+
+  // ====== Elements ======
+  const loginSection = document.getElementById("login-section");
+  const registerSection = document.getElementById("register-section");
+  const subjectSection = document.getElementById("subject-section");
+  const quizSection = document.getElementById("quiz-section");
+
+  const loginForm = document.getElementById("login-form");
+  const registerForm = document.getElementById("register-form");
+
+  const showRegisterLink = document.getElementById("show-register");
+  const showLoginLink = document.getElementById("show-login");
+
+  const subjectButtons = document.querySelectorAll(".subject-btn");
+  const logoutBtn = document.getElementById("logout-btn");
+
+  const timerEl = document.getElementById("timer");
+  const questionNumberEl = document.getElementById("question-number");
+  const questionTextEl = document.getElementById("question-text");
+  const optionsContainer = quizSection.querySelector(".options");
+  const nextBtn = document.getElementById("next-btn");
+  const scoreDisplay = document.getElementById("score-display");
+  const backSubjectsBtn = document.getElementById("back-subjects-btn");
+
+  // ====== State ======
+  let currentUser = null;
+  let currentSubject = null;
+  let currentQuiz = [];
+  let currentQuestionIndex = 0;
+  let score = 0;
+  let timer;
+  let timeLeft = 40;
+  let answered = false;
+
+  // ====== Utility Functions ======
+
+  function saveUsers(users) {
+    localStorage.setItem(usersKey, JSON.stringify(users));
+  }
+
+  function getUsers() {
+    const users = localStorage.getItem(usersKey);
+    return users ? JSON.parse(users) : [];
+  }
+
+  function saveLoggedUser(username) {
+    localStorage.setItem(loggedUserKey, username);
+  }
+
+  function getLoggedUser() {
+    return localStorage.getItem(loggedUserKey);
+  }
+
+  function logout() {
+    localStorage.removeItem(loggedUserKey);
+    currentUser = null;
+    showSection(loginSection);
+  }
+
+  // Show only one section
+  function showSection(section) {
+    [loginSection, registerSection, subjectSection, quizSection].forEach(s => {
+      s.classList.remove("active");
+    });
+    section.classList.add("active");
+  }
+
+  // Show alert (simple)
+  function showAlert(message) {
+    alert(message);
+  }
+
+  // ====== Authentication ======
+
+  // Register form
+  registerForm.addEventListener("submit", e => {
+    e.preventDefault();
+    const username = document.getElementById("register-username").value.trim();
+    const email = document.getElementById("register-email").value.trim();
+    const password = document.getElementById("register-password").value.trim();
+
+    const users = getUsers();
+    if(users.find(u => u.username === username)) {
+      showAlert("Username already exists. Please choose another.");
+      return;
+    }
+    if(users.find(u => u.email === email)) {
+      showAlert("Email already registered. Please login or use another email.");
+      return;
+    }
+
+    users.push({username, email, password});
+    saveUsers(users);
+    showAlert("Registration successful! You can now login.");
+    registerForm.reset();
+    showSection(loginSection);
+  });
+
+  // Login form
+  loginForm.addEventListener("submit", e => {
+    e.preventDefault();
+    const username = document.getElementById("login-username").value.trim();
+    const password = document.getElementById("login-password").value.trim();
+
+    const users = getUsers();
+    const user = users.find(u => u.username === username && u.password === password);
+    if(!user) {
+      showAlert("Invalid username or password.");
+      return;
+    }
+    currentUser = user.username;
+    saveLoggedUser(currentUser);
+    loginForm.reset();
+    showSection(subjectSection);
+  });
+
+  // Toggle links
+  showRegisterLink.addEventListener("click", e => {
+    e.preventDefault();
+    showSection(registerSection);
+  });
+  showLoginLink.addEventListener("click", e => {
+    e.preventDefault();
+    showSection(loginSection);
+  });
+
+  // ====== Subject Selection ======
+
+  subjectButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      currentSubject = button.getAttribute("data-subject");
+      startQuiz(currentSubject);
+    });
+  });
+
+  logoutBtn.addEventListener("click", () => {
+    logout();
+  });
+
+  // ====== Quiz Functions ======
+
+  function startQuiz(subject) {
+    currentQuiz = quizData[subject];
+    currentQuestionIndex = 0;
+    score = 0;
+    scoreDisplay.textContent = "";
+    nextBtn.disabled = true;
+    showSection(quizSection);
+    showQuestion();
+    startTimer();
+  }
+
+  function showQuestion() {
+    answered = false;
+    nextBtn.disabled = true;
+    clearOptions();
+    timeLeft = 40;
+    updateTimer();
+
+    const currentQ = currentQuiz[currentQuestionIndex];
+    questionNumberEl.textContent = `Question ${currentQuestionIndex + 1} of ${currentQuiz.length}`;
+    questionTextEl.textContent = currentQ.question;
+
+    currentQ.options.forEach((option, index) => {
+      const btn = document.createElement("button");
+      btn.classList.add("option-btn");
+      btn.textContent = option;
+      btn.setAttribute("role", "listitem");
+      btn.setAttribute("aria-label", `Option ${index + 1}: ${option}`);
+      btn.addEventListener("click", () => selectOption(index, btn));
+      optionsContainer.appendChild(btn);
+    });
+  }
+
+  function clearOptions() {
+    optionsContainer.innerHTML = "";
+  }
+
+  function selectOption(index, btn) {
+    if (answered) return; // prevent multiple answers
+
+    answered = true;
+    stopTimer();
+
+    const currentQ = currentQuiz[currentQuestionIndex];
+    const buttons = optionsContainer.querySelectorAll("button");
+
+    buttons.forEach((button, i) => {
+      button.disabled = true;
+      if(i === currentQ.answer) {
+        button.classList.add("correct");
+      }
+    });
+
+    if(index === currentQ.answer) {
+      score++;
+      btn.classList.add("correct");
+    } else {
+      btn.classList.add("wrong");
+    }
+    nextBtn.disabled = false;
+  }
+
+  nextBtn.addEventListener("click", () => {
+    currentQuestionIndex++;
+    if(currentQuestionIndex < currentQuiz.length) {
+      showQuestion();
+      startTimer();
+      scoreDisplay.textContent = "";
+    } else {
+      showScore();
+    }
+  });
+
+  function showScore() {
+    questionNumberEl.textContent = "";
+    questionTextEl.textContent = "";
+    clearOptions();
+    timerEl.textContent = "";
+
+    scoreDisplay.textContent = `You scored ${score} out of ${currentQuiz.length}! 🎉`;
+    nextBtn.disabled = true;
+  }
+
+  backSubjectsBtn.addEventListener("click", () => {
+    stopTimer();
+    showSection(subjectSection);
+  });
+
+  // ====== Timer ======
+
+  function startTimer() {
+    updateTimer();
+    timer = setInterval(() => {
+      timeLeft--;
+      updateTimer();
+      if(timeLeft <= 0) {
+        stopTimer();
+        revealAnswerTimeout();
+      }
+    }, 1000);
+  }
+
+  function stopTimer() {
+    clearInterval(timer);
+  }
+
+  function updateTimer() {
+    timerEl.textContent = `Time left: ${timeLeft}s`;
+  }
+
+  function revealAnswerTimeout() {
+    if (answered) return;
+    answered = true;
+    nextBtn.disabled = false;
+
+    // Disable all options, show correct answer
+    const buttons = optionsContainer.querySelectorAll("button");
+    const currentQ = currentQuiz[currentQuestionIndex];
+    buttons.forEach((button, i) => {
+      button.disabled = true;
+      if(i === currentQ.answer) {
+        button.classList.add("correct");
+      }
+    });
+  }
+
+  // ====== On page load ======
+
+  // If user is logged in, show subjects, else show login
+  window.onload = () => {
+    const loggedInUser = getLoggedUser();
+    if(loggedInUser) {
+      currentUser = loggedInUser;
+      showSection(subjectSection);
+    } else {
+      showSection(loginSection);
+    }
+  };
+</script>
+</body>
+</html>
